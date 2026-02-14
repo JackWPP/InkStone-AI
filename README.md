@@ -56,6 +56,11 @@ GUI 功能：
 - `timeout`
 - `max_retries`
 
+可通过环境变量控制真实推理开关：
+
+- `INKSTONE_ENABLE_HF=1`：启用 System A/B 的 HF 真实翻译推理
+- `INKSTONE_ENABLE_LLM=1`：启用 System C 与评审链路的真实 LLM 调用
+
 ## 主要产物
 
 - `reports/`：实验日志、图表、总报告
@@ -72,3 +77,4 @@ GUI 功能：
 - `docs/methodology/*.md`
 - `data/processed/data_quality.jsonl`
 - `data/processed/freeze_manifest.jsonl`
+- `data/processed/translation_stats.jsonl`

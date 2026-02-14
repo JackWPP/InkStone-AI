@@ -48,6 +48,7 @@ def load_dashboard_data(root: Path) -> dict[str, Any]:
         "files": {
             "eval_set": processed / "eval_set.jsonl",
             "translations": processed / "translations.jsonl",
+            "translation_stats": processed / "translation_stats.jsonl",
             "persona_gold": processed / "persona_gold.jsonl",
             "judge_scores": processed / "judge_scores.jsonl",
             "metrics_traditional": processed / "metrics_traditional.jsonl",

@@ -9,4 +9,5 @@ def test_pipeline_smoke() -> None:
     assert Path(outputs["report"]).exists()
     assert Path("data/processed/data_quality.jsonl").exists()
     assert Path("data/processed/freeze_manifest.jsonl").exists()
+    assert Path("data/processed/translation_stats.jsonl").exists()
     assert Path("reports/run_manifest.jsonl").exists()

@@ -24,6 +24,10 @@ def _show_file_hint(path: Path) -> None:
 
 def _render_overview(data: dict[str, Any]) -> None:
     summary = data.get("summary", {})
+    files = data.get("files", {})
+    ts_path = files.get("translation_stats")
+    ts_rows = read_jsonl_safe(ts_path) if isinstance(ts_path, Path) else []
+    ts = ts_rows[0] if ts_rows else {}
     col1, col2 = st.columns(2)
     with col1:
         st.metric(
@@ -31,6 +35,14 @@ def _render_overview(data: dict[str, Any]) -> None:
         )
     with col2:
         st.metric("系统数量", len(summary.get("system_means", {})))
+
+    col3, col4, col5 = st.columns(3)
+    with col3:
+        st.metric("翻译缓存命中", int(ts.get("cache_hit", 0)))
+    with col4:
+        st.metric("HF 成功数", int(ts.get("hf_success", 0)))
+    with col5:
+        st.metric("LLM 成功数", int(ts.get("llm_success", 0)))
 
     st.subheader("系统五维均值")
     means = summary.get("system_means", {})
