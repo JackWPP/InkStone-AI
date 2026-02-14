@@ -34,21 +34,23 @@ def _load_hf_model(model_name: str) -> Any | None:
             return None
 
 
-def _hf_translate(model_name: str, text_zh: str) -> str | None:
+def _hf_translate(model_name: str, text_zh: str, max_retries: int = 1) -> str | None:
     translator = _load_hf_model(model_name)
     if translator is None:
         return None
-    try:
-        result = translator(text_zh, max_new_tokens=256)
-        if isinstance(result, list) and result:
-            first = result[0]
-            if isinstance(first, dict):
-                if "translation_text" in first:
-                    return str(first["translation_text"]).strip()
-                if "generated_text" in first:
-                    return str(first["generated_text"]).strip()
-    except Exception:
-        return None
+    attempts = max(1, int(max_retries) + 1)
+    for _ in range(attempts):
+        try:
+            result = translator(text_zh, max_new_tokens=256)
+            if isinstance(result, list) and result:
+                first = result[0]
+                if isinstance(first, dict):
+                    if "translation_text" in first:
+                        return str(first["translation_text"]).strip()
+                    if "generated_text" in first:
+                        return str(first["generated_text"]).strip()
+        except Exception:
+            continue
     return None
 
 
@@ -80,6 +82,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     stats = {
         "cache_hit": 0,
         "hf_success": 0,
+        "hf_fail": 0,
         "llm_success": 0,
         "fallback_mock": 0,
     }
@@ -95,12 +98,17 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
             if translated is None:
                 used_mode = "fallback_mock"
                 if hf_enabled and str(system.get("kind")) == "hf_nmt":
-                    hf_result = _hf_translate(str(system.get("model", "")), text_zh)
+                    hf_result = _hf_translate(
+                        str(system.get("model", "")),
+                        text_zh,
+                        max_retries=int(system.get("max_retries", 1)),
+                    )
                     if hf_result:
                         translated = hf_result
                         used_mode = "hf_success"
                     else:
                         translated = _mock_translate(text_zh, system_id)
+                        stats["hf_fail"] += 1
                 elif llm_enabled and str(system.get("kind")) == "llm":
                     llm_cfg = llm_config_from_dict(system)
                     system_prompt = _load_prompt(prompt_dir, prompt_version)
