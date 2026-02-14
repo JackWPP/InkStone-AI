@@ -12,7 +12,9 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     processed = Path(config["paths"]["data_processed"])
     persona_rows = read_jsonl(processed / "persona_gold.jsonl")
     trans_rows = read_jsonl(processed / "translations.jsonl")
+    eval_rows = read_jsonl(processed / "eval_set.jsonl")
     trans_map = {(r["sid"], r["system_id"]): r for r in trans_rows}
+    eval_map = {r["sid"]: r for r in eval_rows}
 
     bank: list[dict[str, Any]] = []
     for row in persona_rows:
@@ -22,15 +24,21 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
         if max(int(ranges[d]) for d in DIMENSIONS) > 1:
             continue
         trow = trans_map[(row["sid"], row["system_id"])]
+        erow = eval_map.get(row["sid"], {})
+        metaphor_type = erow.get("metaphor_meta", {}).get(
+            "metaphor_type", "mixed_other"
+        )
         bank.append(
             {
                 "sid": row["sid"],
                 "system_id": row["system_id"],
                 "text_zh": trow["text_zh"],
                 "translation": trow["translation"],
+                "metaphor_type": metaphor_type,
                 "scores_gold": row["scores_gold"],
                 "OV_gold": row["OV_gold"],
                 "gold_rationale": "High-consistency pseudo gold sample.",
+                "consistency_max_range": max(int(ranges[d]) for d in DIMENSIONS),
             }
         )
 

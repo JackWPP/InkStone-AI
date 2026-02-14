@@ -17,6 +17,32 @@ def _ov(scores: dict[str, int]) -> int:
     return int(round(sum(w * s for w, s in zip(WEIGHTS, ordered))))
 
 
+def _select_icl_examples(
+    bank: list[dict[str, Any]],
+    k: int,
+    target_sid: str,
+    target_mtype: str,
+) -> list[dict[str, Any]]:
+    same_type = [
+        ex
+        for ex in bank
+        if str(ex.get("sid")) != target_sid
+        and str(ex.get("metaphor_type", "mixed_other")) == target_mtype
+    ]
+    other_type = [
+        ex
+        for ex in bank
+        if str(ex.get("sid")) != target_sid
+        and str(ex.get("metaphor_type", "mixed_other")) != target_mtype
+    ]
+    selected: list[dict[str, Any]] = []
+    if same_type:
+        selected.extend(same_type[: min(k, max(1, k // 2 + 1))])
+    if len(selected) < k:
+        selected.extend(other_type[: max(0, k - len(selected))])
+    return selected[:k]
+
+
 def run(config: dict[str, Any]) -> dict[str, Any]:
     processed = Path(config["paths"]["data_processed"])
     prompts_dir = Path(config["paths"]["prompts_dir"])
@@ -32,8 +58,10 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
 
     persona_rows = read_jsonl(processed / "persona_gold.jsonl")
     trans_rows = read_jsonl(processed / "translations.jsonl")
+    eval_rows = read_jsonl(processed / "eval_set.jsonl")
     few_shot_bank = read_jsonl(processed / "few_shot_bank.jsonl")
     trans_map = {(r["sid"], r["system_id"]): r for r in trans_rows}
+    eval_map = {r["sid"]: r for r in eval_rows}
     llm_cfg = llm_config_from_dict(config["judge"]["standard_model"])
     k = int(config["judge"]["icl"].get("k", 3))
     llm_enabled = os.getenv("INKSTONE_ENABLE_LLM", "0") == "1"
@@ -42,13 +70,18 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     for row in persona_rows:
         scores_gold = row["scores_gold"]
         tr = trans_map.get((row["sid"], row["system_id"]))
-        chosen = few_shot_bank[:k]
+        erow = eval_map.get(row["sid"], {})
+        target_mtype = str(
+            erow.get("metaphor_meta", {}).get("metaphor_type", "mixed_other")
+        )
+        chosen = _select_icl_examples(few_shot_bank, k, str(row["sid"]), target_mtype)
         shot_lines = []
         for idx, ex in enumerate(chosen, start=1):
             shot_lines.append(
                 f"[示例{idx}]\n"
                 f"中文: {ex['text_zh']}\n"
                 f"译文: {ex['translation']}\n"
+                f"隐喻类型: {ex.get('metaphor_type', 'mixed_other')}\n"
                 f"Gold: {ex['scores_gold']} OV={ex['OV_gold']}\n"
                 f"理由: {ex.get('gold_rationale', '')}"
             )
@@ -97,6 +130,8 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
                 "OV_model": max(1, min(5, ov_model)),
                 "judge_prompt_version": prompt_version,
                 "judge_mode": "llm" if llm_json is not None else "fallback_seed",
+                "icl_target_mtype": target_mtype,
+                "icl_k": len(chosen),
             }
         )
 
