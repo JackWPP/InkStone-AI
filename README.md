@@ -30,6 +30,7 @@ GUI 功能：
 
 - 一键触发全流程运行
 - 查看人模相关性与系统五维均值
+- 查看数据质量（来源分布、去重统计、冻结清单）
 - 预览 Fig1-Fig4 图表
 - 浏览评测集/翻译样本
 - 查看实验日志与方法文档存在性
@@ -67,4 +68,7 @@ GUI 功能：
 - `reports/figures/fig1-fig4` 的 `png+pdf`
 - `reports/logs/experiment_log.md`
 - `reports/report.md`
+- `reports/run_manifest.jsonl`
 - `docs/methodology/*.md`
+- `data/processed/data_quality.jsonl`
+- `data/processed/freeze_manifest.jsonl`
