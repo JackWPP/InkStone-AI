@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from src.pipeline import (
+    baseline,
     build_dataset,
     icl_builder,
     judge_persona,
@@ -22,6 +23,8 @@ def run_pipeline(config_path: str) -> dict[str, str]:
     Path(config["paths"]["reports_dir"]).mkdir(parents=True, exist_ok=True)
     Path(config["paths"]["methodology_dir"]).mkdir(parents=True, exist_ok=True)
 
+    baseline.write_run_manifest(config, stage="start")
+
     build_dataset.run(config)
     translate.run(config)
     judge_persona.run(config)
@@ -30,6 +33,15 @@ def run_pipeline(config_path: str) -> dict[str, str]:
     metric_summary = metrics.run(config)
     viz_stats = visualization.run(config)
     report_paths = report.run(config, metric_summary, viz_stats)
+    baseline.write_run_manifest(
+        config,
+        stage="end",
+        outputs={
+            "report_paths": report_paths,
+            "metric_summary": metric_summary,
+            "viz_stats": viz_stats,
+        },
+    )
     return report_paths
 
 
