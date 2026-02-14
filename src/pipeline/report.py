@@ -95,6 +95,7 @@ def run(
         "---\n\n"
         "# 实验日志\n\n"
         f"- 人模 Spearman 相关: {metrics_summary.get('human_model_spearman', 0.0):.4f}\n"
+        f"- 人模 Spearman 95%CI: {metrics_summary.get('human_model_spearman_ci95', {})}\n"
         f"- Fig2 Pearson r: {viz_stats.get('pearson_r', 0.0):.4f}\n"
         f"- Fig2 Spearman rho: {viz_stats.get('spearman_rho', 0.0):.4f}\n"
         f"- 数据来源计数: {source_counter}\n"
