@@ -1,1 +1,1 @@
-{"rows": 900, "elapsed_sec": 0.837, "hf_enabled": false, "llm_enabled": false, "cache_hit": 900, "hf_success": 0, "llm_success": 0, "fallback_mock": 0}
+{"rows": 900, "elapsed_sec": 0.801, "hf_enabled": false, "llm_enabled": false, "cache_hit": 900, "hf_success": 0, "hf_fail": 0, "llm_success": 0, "fallback_mock": 0}
