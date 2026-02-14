@@ -1,0 +1,6 @@
+style: seaborn-v0_8
+font:
+  title: 15
+  axis: 12
+  tick: 10
+dpi: 300

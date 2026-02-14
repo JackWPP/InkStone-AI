@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inkstone-ai"
+version = "0.1.0"
+description = "Metaphor-based grace evaluation pipeline for zh-en MT"
+requires-python = ">=3.10"
+dependencies = [
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "PyYAML>=6.0",
+  "sacrebleu>=2.4",
+  "nltk>=3.9",
+  "openai>=1.51",
+  "datasets>=2.21",
+  "transformers>=4.45",
+  "tqdm>=4.66",
+]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,9 @@
+matplotlib>=3.8
+numpy>=1.26
+PyYAML>=6.0
+sacrebleu>=2.4
+nltk>=3.9
+openai>=1.51
+datasets>=2.21
+transformers>=4.45
+tqdm>=4.66

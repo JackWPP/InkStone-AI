@@ -1,0 +1,42 @@
+run:
+  seed: 20260215
+  n_eval: 300
+  reference_source: writer
+
+paths:
+  data_raw_books: data/raw/books
+  data_external: data/external
+  data_processed: data/processed
+  reports_dir: reports
+  methodology_dir: docs/methodology
+  prompts_dir: configs/prompts
+
+systems:
+  - id: system_a
+    kind: hf_nmt
+    model: Helsinki-NLP/opus-mt-zh-en
+    prompt_version: trans_v1
+  - id: system_b
+    kind: hf_nmt
+    model: facebook/nllb-200-distilled-600M
+    prompt_version: trans_v1
+  - id: system_c
+    kind: llm
+    provider: openai_compatible
+    model: qwen3-8b-instruct
+    base_url: http://localhost:1234/v1
+    api_key_env: OPENAI_API_KEY
+    temperature: 0.2
+    prompt_version: trans_v1
+
+judge:
+  standard_model:
+    provider: openai_compatible
+    model: kimi-k2
+    base_url: https://api.moonshot.cn/v1
+    api_key_env: OPENAI_API_KEY
+    temperature: 0.1
+    prompt_version: judge_standard_v1_icl
+  icl:
+    k: 3
+    seed: 20260215

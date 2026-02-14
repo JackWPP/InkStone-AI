@@ -1,0 +1,3 @@
+Classify the Chinese sentence into one metaphor type:
+simile, implicit, personification, synesthesia, cultural_allusion, dead_conventional, mixed_other.
+Return strict JSON: {"metaphor_type":"...","cultural_load":"low|medium|high"}
