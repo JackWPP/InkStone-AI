@@ -100,7 +100,7 @@ def run(
         f"- 数据来源计数: {source_counter}\n"
         f"- 数据质量: rows_after_dedup={quality.get('rows_after_dedup', 0)}, duplicates_removed={quality.get('duplicates_removed', 0)}\n"
         f"- 外部解析文件数: {parser_meta.get('n_files', 0)}\n"
-        f"- 翻译统计: cache_hit={trans_stats.get('cache_hit', 0)}, hf_success={trans_stats.get('hf_success', 0)}, llm_success={trans_stats.get('llm_success', 0)}, fallback_mock={trans_stats.get('fallback_mock', 0)}\n"
+        f"- 翻译统计: cache_hit={trans_stats.get('cache_hit', 0)}, hf_success={trans_stats.get('hf_success', 0)}, hf_fail={trans_stats.get('hf_fail', 0)}, llm_success={trans_stats.get('llm_success', 0)}, fallback_mock={trans_stats.get('fallback_mock', 0)}\n"
         f"- books 管线启用: {'是' if books_enabled else '否'}\n"
         f"- books 文件: {books_list}\n"
         "- 图表产物: reports/figures/fig1-fig4 (png/pdf)\n"
