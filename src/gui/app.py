@@ -176,6 +176,43 @@ def _render_reports(data: dict[str, Any]) -> None:
                 st.markdown(text)
 
 
+def _render_run_history(data: dict[str, Any]) -> None:
+    st.subheader("运行历史对比")
+    files = data.get("files", {})
+    run_manifest = files.get("run_manifest")
+    rows = read_jsonl_safe(run_manifest) if isinstance(run_manifest, Path) else []
+    end_rows = [r for r in rows if str(r.get("stage", "")) == "end"]
+    if not end_rows:
+        st.info("暂无可对比的历史运行记录。")
+        return
+    end_rows = end_rows[-20:]
+    table = []
+    for r in end_rows:
+        out = r.get("outputs", {}) if isinstance(r.get("outputs"), dict) else {}
+        metric_summary = (
+            out.get("metric_summary", {})
+            if isinstance(out.get("metric_summary"), dict)
+            else {}
+        )
+        ci = (
+            metric_summary.get("human_model_spearman_ci95", {})
+            if isinstance(metric_summary.get("human_model_spearman_ci95"), dict)
+            else {}
+        )
+        table.append(
+            {
+                "created_at": r.get("created_at", ""),
+                "git_head": r.get("git_head", ""),
+                "seed": r.get("seed", ""),
+                "n_eval": r.get("n_eval", ""),
+                "spearman": metric_summary.get("human_model_spearman", 0.0),
+                "ci_low": ci.get("low", 0.0),
+                "ci_high": ci.get("high", 0.0),
+            }
+        )
+    st.dataframe(table, use_container_width=True)
+
+
 def main() -> None:
     st.set_page_config(page_title="INKSTONE-AI 可视化面板", layout="wide")
     st.title("INKSTONE-AI 可视化面板")
@@ -210,6 +247,7 @@ def main() -> None:
     _render_quality(data)
     _render_figures(data)
     _render_data_samples(data)
+    _render_run_history(data)
     _render_reports(data)
 
 
