@@ -19,7 +19,7 @@ def _render_methodology(config: dict[str, Any]) -> None:
 
     (mdir / "01_data_construction.md").write_text(
         "# 数据构建\n\n"
-        "本次默认使用内置种子样本流程（后续会接入 CMDAG/CMC 自动下载）。\n\n"
+        "本次流程优先解析外部数据（CMDAG/CMC 目录），并支持 books 可选补充，最后以 seed 样本兜底。\n\n"
         "## 隐喻标注提示词\n\n"
         "```text\n"
         f"{tagger_prompt}\n"
@@ -72,6 +72,12 @@ def run(
         src = str(row.get("source_meta", {}).get("source", "unknown"))
         source_counter[src] = source_counter.get(src, 0) + 1
 
+    quality_rows = read_jsonl(
+        Path(config["paths"]["data_processed"]) / "data_quality.jsonl"
+    )
+    quality = quality_rows[0] if quality_rows else {}
+    parser_meta = quality.get("parser_meta", {}) if isinstance(quality, dict) else {}
+
     books_enabled = "books" in source_counter
     books_files = sorted(Path(config["paths"]["data_raw_books"]).glob("*.txt"))
     books_list = ", ".join(p.name for p in books_files) if books_files else "无"
@@ -88,6 +94,8 @@ def run(
         f"- Fig2 Pearson r: {viz_stats.get('pearson_r', 0.0):.4f}\n"
         f"- Fig2 Spearman rho: {viz_stats.get('spearman_rho', 0.0):.4f}\n"
         f"- 数据来源计数: {source_counter}\n"
+        f"- 数据质量: rows_after_dedup={quality.get('rows_after_dedup', 0)}, duplicates_removed={quality.get('duplicates_removed', 0)}\n"
+        f"- 外部解析文件数: {parser_meta.get('n_files', 0)}\n"
         f"- books 管线启用: {'是' if books_enabled else '否'}\n"
         f"- books 文件: {books_list}\n"
         "- 图表产物: reports/figures/fig1-fig4 (png/pdf)\n"
