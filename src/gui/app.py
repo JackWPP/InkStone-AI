@@ -36,6 +36,12 @@ def _render_overview(data: dict[str, Any]) -> None:
     with col2:
         st.metric("系统数量", len(summary.get("system_means", {})))
 
+    ci = summary.get("human_model_spearman_ci95", {})
+    if isinstance(ci, dict):
+        st.caption(
+            f"Spearman 95% CI: [{float(ci.get('low', 0.0)):.4f}, {float(ci.get('high', 0.0)):.4f}]"
+        )
+
     col3, col4, col5 = st.columns(3)
     with col3:
         st.metric("翻译缓存命中", int(ts.get("cache_hit", 0)))

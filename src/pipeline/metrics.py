@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from pathlib import Path
 from statistics import mean
 from typing import Any
@@ -42,6 +43,25 @@ def _spearman(x: list[float], y: list[float]) -> float:
     return _pearson(_rank(x), _rank(y))
 
 
+def _bootstrap_ci_spearman(
+    x: list[float], y: list[float], n_bootstrap: int, seed: int
+) -> dict[str, float]:
+    if len(x) != len(y) or len(x) < 2:
+        return {"low": 0.0, "high": 0.0, "mean": 0.0}
+    rng = random.Random(seed)
+    n = len(x)
+    samples: list[float] = []
+    for _ in range(max(1, n_bootstrap)):
+        idxs = [rng.randrange(n) for _ in range(n)]
+        bx = [x[i] for i in idxs]
+        by = [y[i] for i in idxs]
+        samples.append(_spearman(bx, by))
+    samples.sort()
+    low = samples[int(0.025 * (len(samples) - 1))]
+    high = samples[int(0.975 * (len(samples) - 1))]
+    return {"low": float(low), "high": float(high), "mean": float(mean(samples))}
+
+
 def _system_means(rows: list[dict[str, Any]], key: str) -> dict[str, dict[str, float]]:
     grouped: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
@@ -57,6 +77,7 @@ def _system_means(rows: list[dict[str, Any]], key: str) -> dict[str, dict[str, f
 def run(config: dict[str, Any]) -> dict[str, Any]:
     processed = Path(config["paths"]["data_processed"])
     reference_source = str(config["run"].get("reference_source", "writer"))
+    seed = int(config["run"].get("seed", 20260215))
 
     trans_rows = read_jsonl(processed / "translations.jsonl")
     judge_rows = read_jsonl(processed / "judge_scores.jsonl")
@@ -99,6 +120,12 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     write_jsonl(processed / "metrics_traditional.jsonl", mt_rows)
 
     corr = _spearman(ov_gold_vals, ov_model_vals) if ov_gold_vals else 0.0
+    corr_ci = _bootstrap_ci_spearman(
+        ov_gold_vals,
+        ov_model_vals,
+        n_bootstrap=200,
+        seed=seed,
+    )
     dim_corr: dict[str, dict[str, float]] = {}
     for dim in DIMENSIONS:
         if by_dim_scores[dim]:
@@ -110,6 +137,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     summary = {
         "human_model_spearman": float(corr),
         "human_model_pvalue": 1.0,
+        "human_model_spearman_ci95": corr_ci,
         "system_means": _system_means(judge_rows, "scores_model"),
         "dim_correlation": dim_corr,
     }
