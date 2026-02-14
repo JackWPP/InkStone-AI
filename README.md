@@ -12,6 +12,30 @@
 python scripts/bootstrap.py && python -m src.pipeline.run_all --config configs/systems.yaml
 ```
 
+## 可视化 GUI 面板
+
+安装依赖后可启动可视化仪表盘（Streamlit）：
+
+```bash
+streamlit run src/gui/app.py
+```
+
+或使用脚本：
+
+```bash
+python scripts/run_gui.py
+```
+
+GUI 功能：
+
+- 一键触发全流程运行
+- 查看人模相关性与系统五维均值
+- 预览 Fig1-Fig4 图表
+- 浏览评测集/翻译样本
+- 查看实验日志与方法文档存在性
+
+详细说明见：`docs/GUI_GUIDE.md`
+
 ## 多供应商 LLM（本地 + 云端）
 
 项目采用 OpenAI 兼容接口，可同时支持：

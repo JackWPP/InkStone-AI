@@ -17,6 +17,7 @@ dependencies = [
   "datasets>=2.21",
   "transformers>=4.45",
   "tqdm>=4.66",
+  "streamlit>=1.39",
 ]
 
 [tool.setuptools]
