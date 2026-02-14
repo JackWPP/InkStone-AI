@@ -78,7 +78,7 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
             continue
         gold = gold_map[key]
         model = judge_map[key]
-        reference = f"Reference({reference_source}): {row['text_zh']}"
+        reference = f"参考译文({reference_source}): {row['text_zh']}"
         trad = compute_traditional_row(reference, row["translation"], reference_source)
         mt_rows.append(
             {

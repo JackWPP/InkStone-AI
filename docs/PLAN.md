@@ -1,32 +1,32 @@
-# INKSTONE-AI Implementation Plan (Phase 1)
+# INKSTONE-AI 实施计划（第一阶段）
 
-## Milestone M1: Skeleton + One-command runnable baseline
+## 里程碑 M1：工程骨架与一键可运行基线
 
-1. Create required repository structure from SPEC section 10.
-2. Implement pipeline orchestrator and module stubs with deterministic outputs.
-3. Generate mandatory artifacts in required paths.
-4. Add bootstrap/preflight/download scripts.
+1. 按 SPEC 第 10 章建立完整目录结构。
+2. 实现流水线编排与模块基础实现，保证可确定性产出。
+3. 生成第 12 章要求的核心产物路径。
+4. 补齐 bootstrap/preflight/download 脚本链路。
 
-## Milestone M2: Real data ingestion (CMDAG/CMC)
+## 里程碑 M2：真实数据接入（CMDAG/CMC）
 
-1. Replace seed dataset with real automatic download and normalization.
-2. Implement stratified sampling and frozen eval set.
-3. Add optional books extraction route.
+1. 以可自动下载的数据替换内置种子数据。
+2. 完成去重、分层抽样与评测集冻结机制。
+3. 增加 books 可选抽取路线并写入方法文档。
 
-## Milestone M3: Real translation and judge integration
+## 里程碑 M3：真实翻译与评审接入
 
-1. Implement HF NMT models for System A/B.
-2. Implement multi-provider LLM adapter for System C and judge modules.
-3. Enable ICL few-shot injection in standard judge.
+1. 完成 System A/B 的开源 NMT 推理接入。
+2. 完成多供应商 LLM 适配层（LM Studio/Kimi/OpenAI 兼容）。
+3. 在标准评审中启用 ICL few-shot 注入。
 
-## Milestone M4: Statistics and publication-grade outputs
+## 里程碑 M4：统计增强与论文级输出
 
-1. Add bootstrap confidence intervals.
-2. Strengthen correlation and significance reporting.
-3. Improve figures and report templates for direct thesis insertion.
+1. 增加 bootstrap 置信区间。
+2. 强化相关性与显著性报告。
+3. 优化图表与报告模板，支持直接粘贴入论文。
 
-## Milestone M5: Testing and reproducibility hardening
+## 里程碑 M5：测试与复现加固
 
-1. Add unit tests for core modules and schemas.
-2. Add smoke test for full run_all path.
-3. Pin reproducibility details in logs and methodology docs.
+1. 为 core 模块与 schema 增加单元测试。
+2. 保持全链路 smoke test 稳定通过。
+3. 在日志与方法文档中固定复现元信息。

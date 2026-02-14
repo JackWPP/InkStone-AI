@@ -18,7 +18,7 @@ REQUIRED_MODULES = [
 
 def _check_python() -> list[str]:
     if sys.version_info < (3, 10):
-        return ["Python>=3.10 required. Fix: install Python 3.10+ and recreate venv."]
+        return ["需要 Python>=3.10。修复：安装 Python 3.10+ 并重建虚拟环境。"]
     return []
 
 
@@ -29,7 +29,7 @@ def _check_imports() -> list[str]:
             importlib.import_module(mod)
         except Exception:
             errors.append(
-                f"Missing dependency '{mod}'. Fix: pip install -r requirements.txt"
+                f"缺少依赖 '{mod}'。修复：执行 pip install -r requirements.txt"
             )
     return errors
 
@@ -37,7 +37,7 @@ def _check_imports() -> list[str]:
 def _check_api_key() -> list[str]:
     if not os.getenv("OPENAI_API_KEY"):
         return [
-            "OPENAI_API_KEY not set. Fix: export OPENAI_API_KEY=... (or set local provider key env)."
+            "未设置 OPENAI_API_KEY。修复：设置 OPENAI_API_KEY（或改为本地供应商对应环境变量）。"
         ]
     return []
 
@@ -51,7 +51,7 @@ def _check_output_paths() -> list[str]:
             test_file.write_text("ok", encoding="utf-8")
             test_file.unlink()
         except Exception:
-            errors.append(f"Cannot write to {path}. Fix: verify folder permissions.")
+            errors.append(f"无法写入 {path}。修复：检查目录权限。")
     return errors
 
 
@@ -63,11 +63,11 @@ def main() -> None:
     errors.extend(_check_output_paths())
 
     if errors:
-        print("Preflight failed:")
+        print("预检失败：")
         for e in errors:
             print(f"- {e}")
         raise SystemExit(1)
-    print("Preflight passed")
+    print("预检通过")
 
 
 if __name__ == "__main__":

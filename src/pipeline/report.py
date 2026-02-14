@@ -18,9 +18,9 @@ def _render_methodology(config: dict[str, Any]) -> None:
     p_reader = (prompts_dir / "persona_reader_v1.txt").read_text(encoding="utf-8")
 
     (mdir / "01_data_construction.md").write_text(
-        "# Data Construction\n\n"
+        "# 数据构建\n\n"
         "本次默认使用内置种子样本流程（后续会接入 CMDAG/CMC 自动下载）。\n\n"
-        "## Metaphor Tagger Prompt\n\n"
+        "## 隐喻标注提示词\n\n"
         "```text\n"
         f"{tagger_prompt}\n"
         "```\n",
@@ -28,17 +28,17 @@ def _render_methodology(config: dict[str, Any]) -> None:
     )
 
     (mdir / "02_annotation_guidelines.md").write_text(
-        "# Annotation Guidelines\n\n"
-        "## Persona Prompts\n\n"
-        "### Professor\n\n"
+        "# 标注与评审准则\n\n"
+        "## Persona 提示词\n\n"
+        "### 教授 Persona\n\n"
         "```text\n"
         f"{p_prof}\n"
         "```\n\n"
-        "### Writer\n\n"
+        "### 作家 Persona\n\n"
         "```text\n"
         f"{p_writer}\n"
         "```\n\n"
-        "### Reader\n\n"
+        "### 读者 Persona\n\n"
         "```text\n"
         f"{p_reader}\n"
         "```\n",
@@ -46,7 +46,7 @@ def _render_methodology(config: dict[str, Any]) -> None:
     )
 
     (mdir / "03_metric_definition.md").write_text(
-        "# Metric Definition\n\n"
+        "# 指标定义\n\n"
         "五维：IF, EC, RE, CA, LE。\n\n"
         "OV = round(0.25*IF + 0.20*EC + 0.25*RE + 0.15*CA + 0.15*LE)。\n\n"
         "相关性分析默认 Spearman。\n",
@@ -64,6 +64,18 @@ def run(
 
     _render_methodology(config)
 
+    source_rows = read_jsonl(
+        Path(config["paths"]["data_processed"]) / "source_items.jsonl"
+    )
+    source_counter: dict[str, int] = {}
+    for row in source_rows:
+        src = str(row.get("source_meta", {}).get("source", "unknown"))
+        source_counter[src] = source_counter.get(src, 0) + 1
+
+    books_enabled = "books" in source_counter
+    books_files = sorted(Path(config["paths"]["data_raw_books"]).glob("*.txt"))
+    books_list = ", ".join(p.name for p in books_files) if books_files else "无"
+
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     log_path = logs_dir / "experiment_log.md"
     log_text = (
@@ -71,11 +83,14 @@ def run(
         f"run_id: {run_id}\n"
         "seed: 20260215\n"
         "---\n\n"
-        "# Experiment Log\n\n"
-        f"- Human-Model Spearman: {metrics_summary.get('human_model_spearman', 0.0):.4f}\n"
+        "# 实验日志\n\n"
+        f"- 人模 Spearman 相关: {metrics_summary.get('human_model_spearman', 0.0):.4f}\n"
         f"- Fig2 Pearson r: {viz_stats.get('pearson_r', 0.0):.4f}\n"
         f"- Fig2 Spearman rho: {viz_stats.get('spearman_rho', 0.0):.4f}\n"
-        "- Figures: reports/figures/fig1-fig4 (png/pdf)\n"
+        f"- 数据来源计数: {source_counter}\n"
+        f"- books 管线启用: {'是' if books_enabled else '否'}\n"
+        f"- books 文件: {books_list}\n"
+        "- 图表产物: reports/figures/fig1-fig4 (png/pdf)\n"
     )
     log_path.write_text(log_text, encoding="utf-8")
 
@@ -84,10 +99,10 @@ def run(
         read_jsonl(Path(config["paths"]["data_processed"]) / "eval_set.jsonl")
     )
     report_path.write_text(
-        "# INKSTONE-AI Report\n\n"
-        f"- Eval size: {eval_count}\n"
-        f"- Human-Model Spearman: {metrics_summary.get('human_model_spearman', 0.0):.4f}\n"
-        "- Outputs generated in reports/figures and docs/methodology\n",
+        "# INKSTONE-AI 实验报告\n\n"
+        f"- 评测集规模: {eval_count}\n"
+        f"- 人模 Spearman 相关: {metrics_summary.get('human_model_spearman', 0.0):.4f}\n"
+        "- 主要产物已生成于 reports/figures 与 docs/methodology\n",
         encoding="utf-8",
     )
     return {"log": str(log_path), "report": str(report_path)}

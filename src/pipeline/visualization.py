@@ -62,7 +62,7 @@ def _fig1(eval_rows: list[dict[str, Any]], fig_dir: Path) -> None:
     sizes = [counts[l] for l in labels]
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90)
-    ax.set_title("Fig1 Data Distribution")
+    ax.set_title("Fig1 数据分布")
     _save_fig(fig, fig_dir / "fig1_data_distribution")
 
 
@@ -86,11 +86,9 @@ def _fig2(
         rho = _spearman(x, y)
     else:
         r, rho = 0.0, 0.0
-    ax.set_xlabel("OV_gold")
-    ax.set_ylabel("OV_model")
-    ax.set_title(
-        f"Fig2 Human-Model Correlation (Pearson r={r:.3f}, Spearman ρ={rho:.3f})"
-    )
+    ax.set_xlabel("OV_gold（Persona 聚合）")
+    ax.set_ylabel("OV_model（标准评审）")
+    ax.set_title(f"Fig2 人工-模型相关性 (Pearson r={r:.3f}, Spearman ρ={rho:.3f})")
     _save_fig(fig, fig_dir / "fig2_human_model_correlation")
     return float(r), float(rho)
 
@@ -110,7 +108,7 @@ def _fig3(metrics_summary: dict[str, Any], fig_dir: Path) -> None:
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels)
     ax.set_ylim(1, 5)
-    ax.set_title("Fig3 Radar System Comparison")
+    ax.set_title("Fig3 系统五维雷达对比")
     ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.1))
     _save_fig(fig, fig_dir / "fig3_radar_system_comparison")
 
@@ -129,13 +127,21 @@ def _fig4(metrics_summary: dict[str, Any], fig_dir: Path) -> None:
     ax.set_yticklabels(DIMENSIONS)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["BLEU", "METEOR"])
-    ax.set_title("Fig4 Metric Correlation Heatmap (Spearman)")
+    ax.set_title("Fig4 文采维度与传统指标相关性热力图（Spearman）")
     fig.colorbar(im, ax=ax)
     _save_fig(fig, fig_dir / "fig4_metric_correlation_heatmap")
 
 
 def run(config: dict[str, Any]) -> dict[str, Any]:
     plt.style.use("seaborn-v0_8")
+    plt.rcParams["font.sans-serif"] = [
+        "Microsoft YaHei",
+        "SimHei",
+        "Noto Sans CJK SC",
+        "Arial Unicode MS",
+        "DejaVu Sans",
+    ]
+    plt.rcParams["axes.unicode_minus"] = False
     processed = Path(config["paths"]["data_processed"])
     fig_dir = Path(config["paths"]["reports_dir"]) / "figures"
     eval_rows = read_jsonl(processed / "eval_set.jsonl")

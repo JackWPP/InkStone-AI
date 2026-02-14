@@ -28,7 +28,7 @@ def download_nltk() -> None:
 def ensure_default_config() -> None:
     cfg = Path("configs/systems.yaml")
     if not cfg.exists():
-        raise FileNotFoundError("configs/systems.yaml is missing")
+        raise FileNotFoundError("缺少 configs/systems.yaml 配置文件")
 
 
 def run_download_script() -> None:
@@ -42,7 +42,7 @@ def main() -> None:
     download_nltk()
     ensure_default_config()
     run_download_script()
-    print("bootstrap completed")
+    print("环境引导完成")
 
 
 if __name__ == "__main__":

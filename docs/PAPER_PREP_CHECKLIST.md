@@ -1,34 +1,34 @@
-# Paper Preparation Checklist (Execution-bound)
+# 论文准备清单（与执行绑定）
 
-## Problem and Claims
+## 研究问题与主张
 
-- Define hypotheses H1/H2/H3 with measurable acceptance criteria.
-- Ensure each claim maps to at least one figure/table and one metric.
+- 将 H1/H2/H3 写成可量化验收条件。
+- 确保每个主张都映射到至少一张图/表和一项指标。
 
-## Method
+## 方法定义
 
-- Freeze five-dimension definitions and OV weighting.
-- Freeze persona profiles and prompt versions.
-- Version all prompt files under `configs/prompts/`.
+- 冻结五维定义与 OV 权重。
+- 冻结 Persona 设定与 prompt 版本。
+- `configs/prompts/` 下所有提示词纳入版本管理。
 
-## Experiments and Ablation
+## 实验与消融
 
-- Record run seed, model versions, prompt versions, and reference source.
-- Run system comparison A/B/C with same eval set.
-- Add ablation plan: with/without ICL, with different K values.
+- 记录 seed、模型版本、prompt 版本、reference_source。
+- 在同一 eval_set 上完成 A/B/C 对比。
+- 增加消融：是否启用 ICL、不同 K 值对比。
 
-## Reproducibility
+## 可复现性
 
-- Keep one-command execution path valid.
-- Ensure all produced figures are generated from code, not manual edits.
-- Save logs and methodology docs per run.
+- 保持一条命令可跑通。
+- 确保图表由代码自动生成，禁止手工改图。
+- 每次运行落盘日志与方法文档。
 
-## Figures and Tables
+## 图表与表格
 
-- Fig1 distribution, Fig2 human-model correlation, Fig3 radar, Fig4 heatmap.
-- Include correlation coefficients and clear caption-ready notes.
+- 必须包含 Fig1 分布、Fig2 人模相关、Fig3 雷达图、Fig4 热力图。
+- 图注中给出相关系数并提供可直接用于论文的说明语句。
 
-## Artifact Readiness
+## 产物合规
 
-- Keep outputs in `reports/` and `docs/methodology/`.
-- Do not publish raw copyrighted full text.
+- 产物统一保存在 `reports/` 与 `docs/methodology/`。
+- 不发布版权受限原文全文。

@@ -27,6 +27,8 @@ systems:
     base_url: http://localhost:1234/v1
     api_key_env: OPENAI_API_KEY
     temperature: 0.2
+    timeout: 90
+    max_retries: 1
     prompt_version: trans_v1
 
 judge:
@@ -36,6 +38,8 @@ judge:
     base_url: https://api.moonshot.cn/v1
     api_key_env: OPENAI_API_KEY
     temperature: 0.1
+    timeout: 90
+    max_retries: 2
     prompt_version: judge_standard_v1_icl
   icl:
     k: 3

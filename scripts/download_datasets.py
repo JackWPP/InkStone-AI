@@ -29,7 +29,7 @@ def _hf_fallback(target: Path) -> bool:
         target.mkdir(parents=True, exist_ok=True)
         (target / "hf_fallback.json").write_text(
             json.dumps(
-                {"rows": len(dataset), "note": "placeholder fallback metadata"},
+                {"rows": len(dataset), "note": "HF 备援元数据"},
                 ensure_ascii=False,
             ),
             encoding="utf-8",
@@ -53,17 +53,17 @@ def main() -> None:
             clone_ok = True
 
     if clone_ok:
-        print("dataset download via git clone completed")
+        print("已通过 git clone 完成数据下载")
         return
 
     hf_ok = _hf_fallback(external / "hf_fallback")
     if hf_ok:
-        print("dataset download via HF fallback completed")
+        print("已通过 HuggingFace 备援完成数据下载")
         return
 
     print(
-        "failed to download datasets: git clone and HF fallback both failed. "
-        "Please check network/proxy and rerun scripts/download_datasets.py",
+        "数据下载失败：git clone 与 HF 备援均失败。"
+        "请检查网络/代理后重试 scripts/download_datasets.py",
         file=sys.stderr,
     )
     raise SystemExit(1)

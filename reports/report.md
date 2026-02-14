@@ -1,5 +1,5 @@
-# INKSTONE-AI Report
+# INKSTONE-AI 实验报告
 
-- Eval size: 300
-- Human-Model Spearman: 0.0000
-- Outputs generated in reports/figures and docs/methodology
+- 评测集规模: 300
+- 人模 Spearman 相关: 0.0000
+- 主要产物已生成于 reports/figures 与 docs/methodology
