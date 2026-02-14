@@ -1,11 +1,12 @@
 ---
-run_id: 20260214T203905Z
+run_id: 20260214T204216Z
 seed: 20260215
 ---
 
 # 实验日志
 
 - 人模 Spearman 相关: 0.0000
+- 人模 Spearman 95%CI: {'low': 0.0, 'high': 0.0, 'mean': 0.0}
 - Fig2 Pearson r: 0.0000
 - Fig2 Spearman rho: 0.0000
 - 数据来源计数: {'seed_builtin': 900}
