@@ -45,6 +45,49 @@ def _render_overview(data: dict[str, Any]) -> None:
         st.info("暂无 metrics_summary 数据。")
 
 
+def _render_quality(data: dict[str, Any]) -> None:
+    st.subheader("数据质量")
+    files = data.get("files", {})
+    quality_path = files.get("data_quality")
+    freeze_path = files.get("freeze_manifest")
+
+    quality_rows = (
+        read_jsonl_safe(quality_path) if isinstance(quality_path, Path) else []
+    )
+    quality = quality_rows[0] if quality_rows else {}
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("去重后样本数", int(quality.get("rows_after_dedup", 0)))
+    with col2:
+        st.metric("评测集样本数", int(quality.get("eval_rows", 0)))
+    with col3:
+        st.metric("去重删除数", int(quality.get("duplicates_removed", 0)))
+
+    source_counts = quality.get("source_counts", {})
+    if isinstance(source_counts, dict) and source_counts:
+        st.markdown("**来源分布**")
+        source_rows = [
+            {"source": k, "count": int(v)} for k, v in sorted(source_counts.items())
+        ]
+        st.dataframe(source_rows, use_container_width=True)
+
+    type_counts = quality.get("metaphor_type_counts", {})
+    if isinstance(type_counts, dict) and type_counts:
+        st.markdown("**隐喻类别分布**")
+        type_rows = [
+            {"metaphor_type": k, "count": int(v)}
+            for k, v in sorted(type_counts.items())
+        ]
+        st.dataframe(type_rows, use_container_width=True)
+
+    if isinstance(freeze_path, Path):
+        freeze_rows = read_jsonl_safe(freeze_path)
+        if freeze_rows:
+            st.markdown("**冻结清单（最近一条）**")
+            st.json(freeze_rows[-1])
+
+
 def _render_figures(data: dict[str, Any]) -> None:
     st.subheader("论文图表预览")
     figures = data.get("figures", {})
@@ -146,6 +189,7 @@ def main() -> None:
 
     data = load_dashboard_data(ROOT)
     _render_overview(data)
+    _render_quality(data)
     _render_figures(data)
     _render_data_samples(data)
     _render_reports(data)
